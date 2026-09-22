@@ -5,299 +5,166 @@
   <base target="_top">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: 'Google Sans', Roboto, Arial, sans-serif;
-      font-size: 14px;
-      color: #202124;
-      background: #fff;
-      padding: 20px 24px 16px;
-    }
-
-    h2 {
-      font-size: 18px;
-      font-weight: 600;
-      color: #202124;
-      margin-bottom: 4px;
-    }
-
-    .subtitle {
-      font-size: 13px;
-      color: #5f6368;
-      margin-bottom: 20px;
-    }
-
-    .hub-badge {
-      display: inline-block;
-      background: #e8f5e9;
-      color: #2e7d32;
-      border: 1px solid #a5d6a7;
-      border-radius: 12px;
-      padding: 3px 10px;
-      font-size: 13px;
-      font-weight: 500;
-      margin-bottom: 20px;
-    }
-
-    .hub-badge.error {
-      background: #fff3e0;
-      color: #e65100;
-      border-color: #ffcc80;
-    }
-
-    .field {
-      margin-bottom: 16px;
-    }
-
-    label {
-      display: block;
-      font-size: 12px;
-      font-weight: 600;
-      color: #5f6368;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-      margin-bottom: 6px;
-    }
-
-    input[type="text"],
-    input[type="date"],
-    select {
-      width: 100%;
-      padding: 9px 12px;
-      border: 1px solid #dadce0;
-      border-radius: 6px;
-      font-size: 14px;
-      color: #202124;
-      background: #fff;
-      outline: none;
-      transition: border-color 0.15s;
-    }
-
-    input[type="text"]:focus,
-    input[type="date"]:focus,
-    select:focus {
-      border-color: #1a73e8;
-      box-shadow: 0 0 0 2px rgba(26,115,232,0.15);
-    }
-
-    .date-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .tip {
-      font-size: 12px;
-      color: #5f6368;
-      margin-top: 4px;
-    }
-
-    .divider {
-      border: none;
-      border-top: 1px solid #e8eaed;
-      margin: 20px 0;
-    }
-
-    .actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      margin-top: 4px;
-    }
-
-    button {
-      padding: 9px 20px;
-      border-radius: 6px;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      border: none;
-      transition: background 0.15s, opacity 0.15s;
-    }
-
-    .btn-cancel {
-      background: transparent;
-      color: #1a73e8;
-      border: 1px solid #dadce0;
-    }
-    .btn-cancel:hover { background: #f1f3f4; }
-
-    .btn-submit {
-      background: #1a73e8;
-      color: #fff;
-    }
-    .btn-submit:hover { background: #1557b0; }
-    .btn-submit:disabled { opacity: 0.5; cursor: default; }
-
-    #status {
-      margin-top: 14px;
-      padding: 10px 14px;
-      border-radius: 6px;
-      font-size: 13px;
-      display: none;
-    }
-    #status.success {
-      background: #e8f5e9;
-      color: #2e7d32;
-      border: 1px solid #a5d6a7;
-    }
-    #status.error {
-      background: #fce8e6;
-      color: #c5221f;
-      border: 1px solid #f5c6c4;
-    }
-    #status.loading {
-      background: #e8f0fe;
-      color: #1a73e8;
-      border: 1px solid #aecbfa;
-    }
-
-    .spinner {
-      display: inline-block;
-      width: 14px;
-      height: 14px;
-      border: 2px solid currentColor;
-      border-top-color: transparent;
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      vertical-align: middle;
-      margin-right: 6px;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    body { font-family: 'Google Sans', Roboto, Arial, sans-serif; font-size: 14px; color: #202124; padding: 20px 24px 16px; }
+    h2 { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+    .sub { font-size: 13px; color: #5f6368; margin-bottom: 18px; }
+    .badge { display: inline-block; background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; border-radius: 12px; padding: 3px 12px; font-size: 13px; font-weight: 500; margin-bottom: 18px; }
+    .badge.err { background: #fff3e0; color: #e65100; border-color: #ffcc80; }
+    .field { margin-bottom: 14px; }
+    label { display: block; font-size: 12px; font-weight: 600; color: #5f6368; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 5px; }
+    input, select { width: 100%; padding: 9px 12px; border: 1px solid #dadce0; border-radius: 6px; font-size: 14px; color: #202124; background: #fff; outline: none; }
+    input:focus, select:focus { border-color: #1a73e8; box-shadow: 0 0 0 2px rgba(26,115,232,.15); }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .tip { font-size: 12px; color: #5f6368; margin-top: 3px; }
+    hr { border: none; border-top: 1px solid #e8eaed; margin: 18px 0; }
+    .actions { display: flex; justify-content: flex-end; gap: 10px; }
+    button { padding: 9px 20px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; }
+    .cancel { background: transparent; color: #1a73e8; border: 1px solid #dadce0; }
+    .cancel:hover { background: #f1f3f4; }
+    .submit { background: #1a73e8; color: #fff; }
+    .submit:hover { background: #1557b0; }
+    .submit:disabled { opacity: .5; cursor: default; }
+    #msg { margin-top: 12px; padding: 10px 14px; border-radius: 6px; font-size: 13px; display: none; }
+    #msg.ok  { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+    #msg.err { background: #fce8e6; color: #c5221f; border: 1px solid #f5c6c4; }
+    #msg.busy{ background: #e8f0fe; color: #1a73e8; border: 1px solid #aecbfa; }
+    .spin { display: inline-block; width: 13px; height: 13px; border: 2px solid currentColor; border-top-color: transparent; border-radius: 50%; animation: s .7s linear infinite; vertical-align: middle; margin-right: 5px; }
+    @keyframes s { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
 
-  <h2>🚗 Chauffeur tijdelijk delen</h2>
-  <p class="subtitle">Deel een chauffeur van jouw hub tijdelijk met een andere hub.</p>
+<h2>🚗 Chauffeur tijdelijk delen</h2>
+<p class="sub">De chauffeur wordt in Quinyx tijdelijk gekoppeld aan de andere hub.</p>
 
-  <div id="hubLabel">
-    <span class="hub-badge" id="hubBadge">Laden…</span>
-  </div>
+<div id="hubBadge" class="badge">Laden…</div>
 
-  <div class="field">
-    <label for="badgeNo">Personeelsnummer van de chauffeur</label>
-    <input type="text" id="badgeNo" placeholder="bijv. 12345" autocomplete="off" maxlength="15">
-    <p class="tip">Vul het Quinyx personeelsnummer in van de chauffeur die je wilt delen.</p>
-  </div>
+<div class="field">
+  <label for="badgeNo">Personeelsnummer</label>
+  <input type="text" id="badgeNo" placeholder="bijv. 12345" maxlength="15" autocomplete="off">
+</div>
 
-  <div class="field">
-    <label for="targetHub">Deel met hub</label>
-    <select id="targetHub">
-      <option value="">— Selecteer een hub —</option>
-    </select>
-  </div>
+<div class="field">
+  <label for="agency">Uitzendpartij</label>
+  <select id="agency">
+    <option value="">— Laden… —</option>
+  </select>
+</div>
 
-  <div class="field">
-    <label>Periode</label>
-    <div class="date-row">
-      <div>
-        <input type="date" id="startDate">
-        <p class="tip">Van</p>
-      </div>
-      <div>
-        <input type="date" id="endDate">
-        <p class="tip">Tot en met</p>
-      </div>
+<div class="field">
+  <label for="targetHub">Deel met hub</label>
+  <select id="targetHub">
+    <option value="">— Laden… —</option>
+  </select>
+</div>
+
+<div class="field">
+  <label>Periode</label>
+  <div class="row2">
+    <div>
+      <input type="date" id="startDate">
+      <p class="tip">Van</p>
+    </div>
+    <div>
+      <input type="date" id="endDate">
+      <p class="tip">Tot en met</p>
     </div>
   </div>
+</div>
 
-  <div id="status"></div>
+<div id="msg"></div>
 
-  <hr class="divider">
-  <div class="actions">
-    <button class="btn-cancel" onclick="google.script.host.close()">Annuleren</button>
-    <button class="btn-submit" id="submitBtn" onclick="submitForm()">Deel chauffeur</button>
-  </div>
+<hr>
+<div class="actions">
+  <button class="cancel" onclick="google.script.host.close()">Annuleren</button>
+  <button class="submit" id="btn" onclick="submit()">Deel chauffeur</button>
+</div>
 
 <script>
-  // Stel datumvelden in: startdatum = vandaag, einddatum = vandaag
-  (function () {
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('startDate').value = today;
-    document.getElementById('startDate').min  = today;
-    document.getElementById('endDate').value  = today;
-    document.getElementById('endDate').min    = today;
-  })();
+  // Datums instellen op vandaag
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('startDate').value = today;
+  document.getElementById('startDate').min   = today;
+  document.getElementById('endDate').value   = today;
+  document.getElementById('endDate').min     = today;
 
-  // Laad managerhub en doelhubs
+  document.getElementById('startDate').addEventListener('change', function () {
+    const e = document.getElementById('endDate');
+    if (e.value < this.value) e.value = this.value;
+    e.min = this.value;
+  });
+
+  // Laad hubgegevens (één aanroep)
   google.script.run
-    .withSuccessHandler(function (hubName) {
+    .withSuccessHandler(function (data) {
       const badge = document.getElementById('hubBadge');
-      if (hubName) {
-        badge.textContent = '📍 Jouw hub: ' + hubName;
-      } else {
-        badge.textContent = '⚠️ Jouw hub is niet geconfigureerd';
-        badge.classList.add('error');
-        document.getElementById('submitBtn').disabled = true;
-        showStatus('error', 'Je bent niet geconfigureerd als hubmanager. Neem contact op met de beheerder.');
-      }
-    })
-    .withFailureHandler(function (err) {
-      document.getElementById('hubBadge').textContent = '⚠️ Fout bij laden';
-      document.getElementById('hubBadge').classList.add('error');
-      showStatus('error', 'Fout: ' + err.message);
-    })
-    .getManagerHubName();
 
-  google.script.run
-    .withSuccessHandler(function (hubNames) {
-      const sel = document.getElementById('targetHub');
-      (hubNames || []).forEach(function (name) {
-        const opt = document.createElement('option');
-        opt.value = name;
-        opt.textContent = name;
-        sel.appendChild(opt);
+      if (!data || !data.myHubName) {
+        badge.textContent = '⚠️ Hub niet gevonden';
+        badge.classList.add('err');
+        document.getElementById('btn').disabled = true;
+        showMsg('err', 'Jouw email is niet ingesteld als hubmanager. Neem contact op met de beheerder.');
+        return;
+      }
+
+      badge.textContent = '📍 Jouw hub: ' + data.myHubName;
+
+      const agencySel = document.getElementById('agency');
+      agencySel.innerHTML = '<option value="">— Selecteer uitzendpartij —</option>';
+      data.agencies.forEach(function (a) {
+        const o = document.createElement('option');
+        o.value = o.textContent = a;
+        agencySel.appendChild(o);
+      });
+
+      const hubSel = document.getElementById('targetHub');
+      hubSel.innerHTML = '<option value="">— Selecteer hub —</option>';
+      data.otherHubs.forEach(function (h) {
+        const o = document.createElement('option');
+        o.value = o.textContent = h;
+        hubSel.appendChild(o);
       });
     })
     .withFailureHandler(function (err) {
-      showStatus('error', 'Fout bij laden hubs: ' + err.message);
+      showMsg('err', 'Fout bij laden: ' + err.message);
     })
-    .getOtherHubNames();
+    .getDialogData();
 
-  // Zorg dat einddatum niet vóór startdatum kan liggen
-  document.getElementById('startDate').addEventListener('change', function () {
-    const end = document.getElementById('endDate');
-    if (end.value < this.value) end.value = this.value;
-    end.min = this.value;
-  });
+  function submit() {
+    const badgeNo   = document.getElementById('badgeNo').value.trim();
+    const agency    = document.getElementById('agency').value;
+    const targetHub = document.getElementById('targetHub').value;
+    const startDate = document.getElementById('startDate').value;
+    const endDate   = document.getElementById('endDate').value;
 
-  function submitForm() {
-    const badgeNo     = document.getElementById('badgeNo').value.trim();
-    const targetHub   = document.getElementById('targetHub').value;
-    const startDate   = document.getElementById('startDate').value;
-    const endDate     = document.getElementById('endDate').value;
+    if (!badgeNo)   { showMsg('err', 'Voer een personeelsnummer in.'); return; }
+    if (!agency)    { showMsg('err', 'Selecteer een uitzendpartij.'); return; }
+    if (!targetHub) { showMsg('err', 'Selecteer een doelhub.'); return; }
+    if (!startDate) { showMsg('err', 'Selecteer een startdatum.'); return; }
+    if (!endDate)   { showMsg('err', 'Selecteer een einddatum.'); return; }
 
-    // Client-side basisvalidatie
-    if (!badgeNo)    { showStatus('error', 'Voer een personeelsnummer in.'); return; }
-    if (!targetHub)  { showStatus('error', 'Selecteer een doelhub.'); return; }
-    if (!startDate)  { showStatus('error', 'Selecteer een startdatum.'); return; }
-    if (!endDate)    { showStatus('error', 'Selecteer een einddatum.'); return; }
-
-    showStatus('loading', '<span class="spinner"></span> Bezig met verwerken…');
-    document.getElementById('submitBtn').disabled = true;
+    showMsg('busy', '<span class="spin"></span>Bezig…');
+    document.getElementById('btn').disabled = true;
 
     google.script.run
-      .withSuccessHandler(function (result) {
-        document.getElementById('submitBtn').disabled = false;
-        if (result.success) {
-          showStatus('success', '✅ ' + result.message);
-          // Reset form na succes
+      .withSuccessHandler(function (r) {
+        document.getElementById('btn').disabled = false;
+        showMsg(r.success ? 'ok' : 'err', (r.success ? '✅ ' : '❌ ') + r.message);
+        if (r.success) {
           document.getElementById('badgeNo').value = '';
+          document.getElementById('agency').value  = '';
           document.getElementById('targetHub').value = '';
-        } else {
-          showStatus('error', '❌ ' + result.message);
         }
       })
       .withFailureHandler(function (err) {
-        document.getElementById('submitBtn').disabled = false;
-        showStatus('error', '❌ Systeemfout: ' + err.message);
+        document.getElementById('btn').disabled = false;
+        showMsg('err', '❌ Systeemfout: ' + err.message);
       })
-      .shareDriver({ badgeNo, targetHubName: targetHub, startDate, endDate });
+      .shareDriver({ badgeNo, agency, targetHubName: targetHub, startDate, endDate });
   }
 
-  function showStatus(type, html) {
-    const el = document.getElementById('status');
+  function showMsg(type, html) {
+    const el = document.getElementById('msg');
     el.className = type;
     el.innerHTML = html;
     el.style.display = 'block';

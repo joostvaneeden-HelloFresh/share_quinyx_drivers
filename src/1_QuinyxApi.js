@@ -1,130 +1,96 @@
 /**
- * Quinyx SOAP API wrapper — wsdlMoveEmployees operatie.
+ * Quinyx SOAP API wrapper — wsdlMoveEmployees
  *
- * De exacte parameternamen moet je verifiëren via de WSDL documentatie:
- * https://developer.quinyx.com/api/v1/operations/wsdlMoveEmployees
- *
- * Veel voorkomende Quinyx SOAP veldnamen (pas aan na verificatie):
- *   - Medewerker:  badgeNo | extendedEmployeeId | employeeId
- *   - Sectie/groep: groupId | sectionId | sourceGroupId / targetGroupId
- *   - Datum:       fromDate/toDate | startDate/endDate
+ * Endpoint:   https://api.quinyx.com/FlexForceWebServices.php
+ * SOAPAction: "uri:FlexForce/wsdlMoveEmployees"
  */
 
 /**
- * Verplaatst een medewerker tijdelijk naar een andere sectie in Quinyx.
+ * Deelt een chauffeur tijdelijk met een andere hub.
  *
- * @param {Object} params
- * @param {string} params.badgeNo         - Personeelsnummer
- * @param {string} params.sourceSectionId - Sectie ID van de bronnenhub
- * @param {string} params.targetSectionId - Sectie ID van de doelhub
- * @param {string} params.startDate       - Startdatum (YYYY-MM-DD)
- * @param {string} params.endDate         - Einddatum (YYYY-MM-DD)
- * @param {string} params.apiKey          - Quinyx API key
- * @returns {{success:boolean, message:string, raw:string}}
+ * @param {Object} p
+ * @param {string} p.apiKey            - Quinyx API key
+ * @param {string} p.badgeNo           - Personeelsnummer van de chauffeur
+ * @param {string} p.unitExtCode       - Externe code van de doelhub
+ * @param {string} p.sectionCode       - Integratiecode van de doelsectie
+ * @param {string} p.startDate         - Startdatum (YYYY-MM-DD)
+ * @param {string} p.endDate           - Einddatum (YYYY-MM-DD)
+ * @returns {{success: boolean, message: string}}
  */
-function quinyxMoveEmployee(params) {
-  const soapEnvelope = buildMoveEmployeesSoap(params);
-
-  const options = {
-    method: 'post',
-    contentType: 'text/xml; charset=utf-8',
-    headers: {
-      'SOAPAction': '"wsdlMoveEmployees"',
-    },
-    payload: soapEnvelope,
-    muteHttpExceptions: true,
-  };
+function quinyxMoveEmployee(p) {
+  const envelope = `<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope
+  xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"
+  xmlns:tns="https://api.quinyx.com/soap/FlexForce">
+  <soap:Body>
+    <tns:wsdlMoveEmployees>
+      <apiKey xsi:type="xsd:string">${xmlEscape(p.apiKey)}</apiKey>
+      <moveEmployees xsi:type="SOAP-ENC:Array" SOAP-ENC:arrayType="tns:moveEmployee[1]">
+        <item xsi:type="tns:moveEmployee">
+          <badgeNo xsi:type="xsd:string">${xmlEscape(p.badgeNo)}</badgeNo>
+          <unitExtCode xsi:type="xsd:string">${xmlEscape(p.unitExtCode)}</unitExtCode>
+          <newUnitStartDate xsi:type="xsd:string">${xmlEscape(p.startDate)}</newUnitStartDate>
+          <oldUnitEndShareDate xsi:type="xsd:string">${xmlEscape(p.endDate)}</oldUnitEndShareDate>
+          <sharableOnNewUnitFrom xsi:type="xsd:string">${xmlEscape(p.startDate)}</sharableOnNewUnitFrom>
+          <section xsi:type="xsd:string">${xmlEscape(p.sectionCode)}</section>
+        </item>
+      </moveEmployees>
+    </tns:wsdlMoveEmployees>
+  </soap:Body>
+</soap:Envelope>`;
 
   let response;
   try {
-    response = UrlFetchApp.fetch(CONFIG.API_URL, options);
+    response = UrlFetchApp.fetch(CONFIG.API_URL, {
+      method:            'post',
+      contentType:       'text/xml; charset=utf-8',
+      headers:           { 'SOAPAction': '"uri:FlexForce/wsdlMoveEmployees"' },
+      payload:           envelope,
+      muteHttpExceptions: true,
+    });
   } catch (e) {
-    Logger.log('[QuinyxApi] Verbindingsfout: ' + e.toString());
-    return { success: false, message: 'Verbindingsfout met Quinyx: ' + e.message, raw: '' };
+    return { success: false, message: 'Verbindingsfout met Quinyx: ' + e.message };
   }
 
   const code = response.getResponseCode();
   const body = response.getContentText('UTF-8');
-
-  Logger.log('[QuinyxApi] HTTP ' + code + ' response:\n' + body);
+  Logger.log('[Quinyx] HTTP ' + code + '\n' + body);
 
   if (code !== 200) {
-    return {
-      success: false,
-      message: 'Quinyx API fout (HTTP ' + code + '). Zie logs voor details.',
-      raw: body,
-    };
+    return { success: false, message: 'Quinyx API fout (HTTP ' + code + ').' };
   }
 
-  return parseMoveEmployeesResponse(body);
+  return parseResponse(body);
 }
 
-/**
- * Bouwt de SOAP envelope voor de wsdlMoveEmployees operatie.
- *
- * ⚠️  TODO: Verifieer de XML-parameternamen tegen de actuele Quinyx WSDL.
- *     Raadpleeg je Quinyx accountmanager of de developer documentatie.
- */
-function buildMoveEmployeesSoap(params) {
-  return `<?xml version="1.0" encoding="UTF-8"?>
-<soapenv:Envelope
-  xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
-  xmlns:api="https://quinyx.com/">
-  <soapenv:Header>
-    <api:token>${xmlEscape(params.apiKey)}</api:token>
-  </soapenv:Header>
-  <soapenv:Body>
-    <api:wsdlMoveEmployees>
-      <badgeNo>${xmlEscape(params.badgeNo)}</badgeNo>
-      <sourceGroupId>${xmlEscape(params.sourceSectionId)}</sourceGroupId>
-      <targetGroupId>${xmlEscape(params.targetSectionId)}</targetGroupId>
-      <startDate>${xmlEscape(params.startDate)}</startDate>
-      <endDate>${xmlEscape(params.endDate)}</endDate>
-    </api:wsdlMoveEmployees>
-  </soapenv:Body>
-</soapenv:Envelope>`;
-}
-
-/**
- * Parseert de SOAP response van wsdlMoveEmployees.
- *
- * @param {string} responseXml
- * @returns {{success:boolean, message:string, raw:string}}
- */
-function parseMoveEmployeesResponse(responseXml) {
-  // SOAP Fault detectie
-  if (responseXml.includes('<faultstring') || responseXml.match(/:Fault\b/)) {
-    const match = responseXml.match(/<faultstring[^>]*>([^<]+)<\/faultstring>/i);
-    const fault = match ? match[1].trim() : 'Onbekende SOAP fout';
-    return { success: false, message: 'Quinyx melding: ' + fault, raw: responseXml };
+function parseResponse(xml) {
+  // SOAP Fault
+  const faultMatch = xml.match(/<faultstring[^>]*>([^<]+)<\/faultstring>/i);
+  if (faultMatch) {
+    return { success: false, message: 'Quinyx: ' + faultMatch[1].trim() };
   }
 
-  // Succesvolle response (Quinyx geeft een bevestiging terug)
-  if (
-    responseXml.includes('wsdlMoveEmployeesResponse') ||
-    responseXml.includes('moveEmployeesResult') ||
-    responseXml.includes('<return>true</return>') ||
-    responseXml.includes('<result>true</result>')
-  ) {
-    return { success: true, message: 'Chauffeur succesvol gedeeld in Quinyx.', raw: responseXml };
+  // Validatiefouten uit de response
+  const errMatch = xml.match(/<validationErrors[^>]*>(.+?)<\/validationErrors>/is);
+  if (errMatch && errMatch[1].includes('<item')) {
+    const itemMatch = errMatch[1].match(/<item[^>]*>([^<]+)<\/item>/i);
+    if (itemMatch) {
+      return { success: false, message: 'Quinyx validatiefout: ' + itemMatch[1].trim() };
+    }
   }
 
-  // Onverwacht antwoord — log voor debugging
-  Logger.log('[QuinyxApi] Onverwacht antwoord: ' + responseXml);
-  return {
-    success: false,
-    message: 'Onverwacht antwoord van Quinyx. Controleer de logs of neem contact op met de beheerder.',
-    raw: responseXml,
-  };
+  if (xml.includes('wsdlMoveEmployeesResponse') || xml.includes('<moveEmployees')) {
+    return { success: true, message: 'Chauffeur succesvol gedeeld in Quinyx.' };
+  }
+
+  return { success: false, message: 'Onverwacht antwoord van Quinyx. Zie logs.' };
 }
 
-/**
- * Escapet speciale XML-tekens om XML-injectie te voorkomen.
- * @param {*} value
- * @returns {string}
- */
-function xmlEscape(value) {
-  return String(value || '')
+function xmlEscape(v) {
+  return String(v || '')
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')

@@ -1,138 +1,110 @@
 /**
- * Centrale configuratie voor het Quinyx chauffeur-deel systeem.
+ * Configuratie voor het Quinyx chauffeur-deel systeem.
  *
- * Runtime-configuratie (hubs, secties, emails) staat in de "Config" tab
- * van het spreadsheet, zodat beheerders het kunnen aanpassen zonder code.
- * De Quinyx API key(s) staan in Script Properties (niet zichtbaar in het sheet).
+ * Vul de Config tab in het sheet in met jouw hubgegevens.
+ * De API key sla je op via Setup → Stel API key in.
  */
 
 const CONFIG = {
-  // Quinyx SOAP API endpoint
-  // Verifieer dit adres met je Quinyx accountmanager of de WSDL op:
-  // https://developer.quinyx.com/api/v1/operations/wsdlMoveEmployees
-  API_URL: 'https://app.quinyx.com/web-api/ws/v2/',
+  API_URL: 'https://api.quinyx.com/FlexForceWebServices.php',
 
   SHEETS: {
     CONFIG: 'Config',
-    LOG: 'Log',
+    LOG:    'Log',
   },
 
   // Kolomposities in de Config tab (1-based)
+  // Hub Naam | Unit Ext Code | Uitzendpartij | Sectie Code | Manager Emails
   CONFIG_COLS: {
-    HUB_NAME: 1,          // Naam van de hub (bijv. "Hub Amsterdam")
-    UNIT_ID: 2,           // Quinyx Unit ID van de hub
-    SECTION_ID: 3,        // Quinyx Sectie ID voor gedeelde chauffeurs in deze hub
-    MANAGER_EMAILS: 4,    // Komma-gescheiden lijst van manager emails
-  },
-
-  // Kolomposities in de Log tab (1-based)
-  LOG_COLS: {
-    TIMESTAMP: 1,
-    ACTOR_EMAIL: 2,
-    ACTION: 3,
-    BADGE_NO: 4,
-    FROM_HUB: 5,
-    TO_HUB: 6,
-    START_DATE: 7,
-    END_DATE: 8,
-    STATUS: 9,
-    NOTES: 10,
+    HUB_NAME:       1,
+    UNIT_EXT_CODE:  2,
+    AGENCY:         3,
+    SECTION_CODE:   4,
+    MANAGER_EMAILS: 5,
   },
 };
 
 /**
- * Leest alle hubconfiguraties uit de Config tab.
- * @returns {Array<{name:string, unitId:string, sectionId:string, managerEmails:string[]}>}
+ * Leest alle rijen uit de Config tab.
+ * @returns {Array<{hubName, unitExtCode, agency, sectionCode, managerEmails[]}>}
  */
-function getHubConfigs() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+function getAllConfigRows() {
+  const ss    = SpreadsheetApp.getActiveSpreadsheet();
   const sheet = ss.getSheetByName(CONFIG.SHEETS.CONFIG);
-
-  if (!sheet) {
-    throw new Error('Config tab niet gevonden. Voer eerst "Setup → Initialiseer bladen" uit.');
-  }
+  if (!sheet) throw new Error('Config tab niet gevonden. Voer eerst "Setup → Initialiseer bladen" uit.');
 
   const data = sheet.getDataRange().getValues();
-  const hubs = [];
+  const rows = [];
 
   for (let i = 1; i < data.length; i++) {
-    const row = data[i];
-    const name = String(row[CONFIG.CONFIG_COLS.HUB_NAME - 1] || '').trim();
-    if (!name) continue;
+    const r = data[i];
+    const hubName = String(r[CONFIG.CONFIG_COLS.HUB_NAME - 1] || '').trim();
+    if (!hubName) continue;
 
-    hubs.push({
-      name: name,
-      unitId: String(row[CONFIG.CONFIG_COLS.UNIT_ID - 1] || '').trim(),
-      sectionId: String(row[CONFIG.CONFIG_COLS.SECTION_ID - 1] || '').trim(),
-      managerEmails: String(row[CONFIG.CONFIG_COLS.MANAGER_EMAILS - 1] || '')
-        .split(',')
-        .map(e => e.trim().toLowerCase())
-        .filter(Boolean),
+    rows.push({
+      hubName:       hubName,
+      unitExtCode:   String(r[CONFIG.CONFIG_COLS.UNIT_EXT_CODE - 1] || '').trim(),
+      agency:        String(r[CONFIG.CONFIG_COLS.AGENCY - 1]        || '').trim(),
+      sectionCode:   String(r[CONFIG.CONFIG_COLS.SECTION_CODE - 1]  || '').trim(),
+      managerEmails: String(r[CONFIG.CONFIG_COLS.MANAGER_EMAILS - 1] || '')
+        .split(',').map(e => e.trim().toLowerCase()).filter(Boolean),
     });
   }
 
-  if (hubs.length === 0) {
-    throw new Error('Geen hubs gevonden in Config tab. Vul de configuratie in.');
-  }
-
-  return hubs;
+  return rows;
 }
 
 /**
- * Zoekt de hub van de ingelogde gebruiker op basis van hun Google-email.
- * Gooit een fout als de gebruiker geen geconfigureerde hubmanager is.
- *
- * @returns {{name:string, unitId:string, sectionId:string, managerEmails:string[]}}
+ * Zoekt de hub van de ingelogde manager op basis van hun email.
+ * @returns {string} Hub naam
  */
-function getManagerHub() {
+function getManagerHubName() {
   const email = Session.getActiveUser().getEmail().toLowerCase();
-  const hubs = getHubConfigs();
-  const hub = hubs.find(h => h.managerEmails.includes(email));
+  const rows  = getAllConfigRows();
+  const row   = rows.find(r => r.managerEmails.includes(email));
+  return row ? row.hubName : null;
+}
 
-  if (!hub) {
-    throw new Error(
-      'Je email (' + email + ') is niet geconfigureerd als hubmanager. ' +
-      'Neem contact op met de beheerder.'
-    );
-  }
+/**
+ * Geeft unieke uitzendpartijen terug voor een bepaalde hub.
+ * @param {string} hubName
+ * @returns {string[]}
+ */
+function getAgenciesForHub(hubName) {
+  const rows    = getAllConfigRows();
+  const agencies = [...new Set(
+    rows.filter(r => r.hubName === hubName).map(r => r.agency)
+  )];
+  return agencies;
+}
 
-  return hub;
+/**
+ * Geeft de andere hubs terug (voor de doelhub dropdown).
+ * @param {string} myHubName
+ * @returns {string[]}
+ */
+function getOtherHubNames(myHubName) {
+  const rows = getAllConfigRows();
+  return [...new Set(rows.map(r => r.hubName))].filter(h => h !== myHubName);
+}
+
+/**
+ * Zoekt een sectie op basis van hub + uitzendpartij.
+ * @param {string} hubName
+ * @param {string} agency
+ * @returns {{unitExtCode, sectionCode}|null}
+ */
+function getSectionForHubAndAgency(hubName, agency) {
+  const row = getAllConfigRows().find(r => r.hubName === hubName && r.agency === agency);
+  return row ? { unitExtCode: row.unitExtCode, sectionCode: row.sectionCode } : null;
 }
 
 /**
  * Haalt de Quinyx API key op uit Script Properties.
- * De key wordt opgeslagen als QUINYX_API_KEY via "Setup → Stel API key in".
- *
- * Als je per unit een aparte API key hebt, sla dan op als
- * QUINYX_API_KEY_[UNIT_ID] en gebruik getApiKeyForUnit(unitId).
- *
  * @returns {string}
  */
 function getApiKey() {
-  const props = PropertiesService.getScriptProperties();
-  const key = props.getProperty('QUINYX_API_KEY');
-
-  if (!key) {
-    throw new Error(
-      'Quinyx API key niet ingesteld. ' +
-      'Voer "Setup → Stel API key in" uit als beheerder.'
-    );
-  }
-
+  const key = PropertiesService.getScriptProperties().getProperty('QUINYX_API_KEY');
+  if (!key) throw new Error('API key niet ingesteld. Voer "Setup → Stel API key in" uit.');
   return key;
-}
-
-/**
- * Haalt de API key op voor een specifieke unit.
- * Valt terug op de globale QUINYX_API_KEY als er geen unit-specifieke key is.
- *
- * @param {string} unitId
- * @returns {string}
- */
-function getApiKeyForUnit(unitId) {
-  const props = PropertiesService.getScriptProperties();
-  const unitKey = props.getProperty('QUINYX_API_KEY_' + unitId);
-  if (unitKey) return unitKey;
-
-  return getApiKey();
 }
