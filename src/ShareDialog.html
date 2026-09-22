@@ -4,57 +4,39 @@
   <meta charset="UTF-8">
   <base target="_top">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Google Sans', Roboto, Arial, sans-serif; font-size: 14px; color: #202124; padding: 20px 24px 16px; }
-    h2 { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
-    .sub { font-size: 13px; color: #5f6368; margin-bottom: 18px; }
-    .badge { display: inline-block; background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; border-radius: 12px; padding: 3px 12px; font-size: 13px; font-weight: 500; margin-bottom: 18px; }
-    .badge.err { background: #fff3e0; color: #e65100; border-color: #ffcc80; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; font-size: 14px; color: #202124; padding: 24px; }
+    h2 { font-size: 17px; margin-bottom: 18px; }
     .field { margin-bottom: 14px; }
-    label { display: block; font-size: 12px; font-weight: 600; color: #5f6368; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 5px; }
-    input, select { width: 100%; padding: 9px 12px; border: 1px solid #dadce0; border-radius: 6px; font-size: 14px; color: #202124; background: #fff; outline: none; }
-    input:focus, select:focus { border-color: #1a73e8; box-shadow: 0 0 0 2px rgba(26,115,232,.15); }
+    label { display: block; font-size: 12px; font-weight: bold; color: #5f6368; margin-bottom: 5px; text-transform: uppercase; }
+    input, select { width: 100%; padding: 9px 12px; border: 1px solid #dadce0; border-radius: 6px; font-size: 14px; }
+    input:focus, select:focus { border-color: #1a73e8; outline: none; }
     .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .tip { font-size: 12px; color: #5f6368; margin-top: 3px; }
     hr { border: none; border-top: 1px solid #e8eaed; margin: 18px 0; }
     .actions { display: flex; justify-content: flex-end; gap: 10px; }
-    button { padding: 9px 20px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; }
-    .cancel { background: transparent; color: #1a73e8; border: 1px solid #dadce0; }
-    .cancel:hover { background: #f1f3f4; }
-    .submit { background: #1a73e8; color: #fff; }
-    .submit:hover { background: #1557b0; }
-    .submit:disabled { opacity: .5; cursor: default; }
-    #msg { margin-top: 12px; padding: 10px 14px; border-radius: 6px; font-size: 13px; display: none; }
-    #msg.ok  { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
-    #msg.err { background: #fce8e6; color: #c5221f; border: 1px solid #f5c6c4; }
-    #msg.busy{ background: #e8f0fe; color: #1a73e8; border: 1px solid #aecbfa; }
-    .spin { display: inline-block; width: 13px; height: 13px; border: 2px solid currentColor; border-top-color: transparent; border-radius: 50%; animation: s .7s linear infinite; vertical-align: middle; margin-right: 5px; }
-    @keyframes s { to { transform: rotate(360deg); } }
+    button { padding: 9px 20px; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer; border: none; }
+    .annuleer { background: #fff; border: 1px solid #dadce0; color: #1a73e8; }
+    .deel { background: #1a73e8; color: #fff; }
+    .deel:disabled { opacity: .5; cursor: default; }
+    #msg { margin-top: 14px; padding: 10px 14px; border-radius: 6px; font-size: 13px; display: none; }
+    .ok   { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+    .fout { background: #fce8e6; color: #c5221f; border: 1px solid #f5c6c4; }
+    .bezig{ background: #e8f0fe; color: #1a73e8; border: 1px solid #aecbfa; }
   </style>
 </head>
 <body>
 
 <h2>🚗 Chauffeur tijdelijk delen</h2>
-<p class="sub">De chauffeur wordt in Quinyx tijdelijk gekoppeld aan de andere hub.</p>
-
-<div id="hubBadge" class="badge">Laden…</div>
 
 <div class="field">
-  <label for="badgeNo">Personeelsnummer</label>
-  <input type="text" id="badgeNo" placeholder="bijv. 12345" maxlength="15" autocomplete="off">
+  <label>Personeelsnummer</label>
+  <input type="text" id="badgeNo" placeholder="bijv. YCDIE12345" autocomplete="off">
 </div>
 
 <div class="field">
-  <label for="agency">Uitzendpartij</label>
-  <select id="agency">
-    <option value="">— Laden… —</option>
-  </select>
-</div>
-
-<div class="field">
-  <label for="targetHub">Deel met hub</label>
-  <select id="targetHub">
-    <option value="">— Laden… —</option>
+  <label>Deel met hub</label>
+  <select id="doelHub">
+    <option value="">— Selecteer hub —</option>
   </select>
 </div>
 
@@ -62,12 +44,12 @@
   <label>Periode</label>
   <div class="row2">
     <div>
+      <label style="margin-bottom:3px">Van</label>
       <input type="date" id="startDate">
-      <p class="tip">Van</p>
     </div>
     <div>
+      <label style="margin-bottom:3px">Tot en met</label>
       <input type="date" id="endDate">
-      <p class="tip">Tot en met</p>
     </div>
   </div>
 </div>
@@ -76,97 +58,72 @@
 
 <hr>
 <div class="actions">
-  <button class="cancel" onclick="google.script.host.close()">Annuleren</button>
-  <button class="submit" id="btn" onclick="submit()">Deel chauffeur</button>
+  <button class="annuleer" onclick="google.script.host.close()">Annuleren</button>
+  <button class="deel" id="btn" onclick="delen()">Deel chauffeur</button>
 </div>
 
 <script>
   // Datums instellen op vandaag
-  const today = new Date().toISOString().split('T')[0];
+  var today = new Date().toISOString().split('T')[0];
   document.getElementById('startDate').value = today;
   document.getElementById('startDate').min   = today;
   document.getElementById('endDate').value   = today;
   document.getElementById('endDate').min     = today;
 
   document.getElementById('startDate').addEventListener('change', function () {
-    const e = document.getElementById('endDate');
+    var e = document.getElementById('endDate');
     if (e.value < this.value) e.value = this.value;
     e.min = this.value;
   });
 
-  // Laad hubgegevens (één aanroep)
+  // Laad de doelhubs
   google.script.run
-    .withSuccessHandler(function (data) {
-      const badge = document.getElementById('hubBadge');
-
-      if (!data || !data.myHubName) {
-        badge.textContent = '⚠️ Hub niet gevonden';
-        badge.classList.add('err');
-        document.getElementById('btn').disabled = true;
-        showMsg('err', 'Jouw email is niet ingesteld als hubmanager. Neem contact op met de beheerder.');
-        return;
-      }
-
-      badge.textContent = '📍 Jouw hub: ' + data.myHubName;
-
-      const agencySel = document.getElementById('agency');
-      agencySel.innerHTML = '<option value="">— Selecteer uitzendpartij —</option>';
-      data.agencies.forEach(function (a) {
-        const o = document.createElement('option');
-        o.value = o.textContent = a;
-        agencySel.appendChild(o);
-      });
-
-      const hubSel = document.getElementById('targetHub');
-      hubSel.innerHTML = '<option value="">— Selecteer hub —</option>';
-      data.otherHubs.forEach(function (h) {
-        const o = document.createElement('option');
+    .withSuccessHandler(function (hubs) {
+      var sel = document.getElementById('doelHub');
+      hubs.forEach(function (h) {
+        var o = document.createElement('option');
         o.value = o.textContent = h;
-        hubSel.appendChild(o);
+        sel.appendChild(o);
       });
     })
-    .withFailureHandler(function (err) {
-      showMsg('err', 'Fout bij laden: ' + err.message);
-    })
-    .getDialogData();
+    .getDoelHubs();
 
-  function submit() {
-    const badgeNo   = document.getElementById('badgeNo').value.trim();
-    const agency    = document.getElementById('agency').value;
-    const targetHub = document.getElementById('targetHub').value;
-    const startDate = document.getElementById('startDate').value;
-    const endDate   = document.getElementById('endDate').value;
+  function delen() {
+    var form = {
+      badgeNo:   document.getElementById('badgeNo').value.trim(),
+      doelHub:   document.getElementById('doelHub').value,
+      startDate: document.getElementById('startDate').value,
+      endDate:   document.getElementById('endDate').value,
+    };
 
-    if (!badgeNo)   { showMsg('err', 'Voer een personeelsnummer in.'); return; }
-    if (!agency)    { showMsg('err', 'Selecteer een uitzendpartij.'); return; }
-    if (!targetHub) { showMsg('err', 'Selecteer een doelhub.'); return; }
-    if (!startDate) { showMsg('err', 'Selecteer een startdatum.'); return; }
-    if (!endDate)   { showMsg('err', 'Selecteer een einddatum.'); return; }
+    if (!form.badgeNo)   { toon('fout', 'Voer een personeelsnummer in.'); return; }
+    if (!form.doelHub)   { toon('fout', 'Selecteer een hub.'); return; }
+    if (!form.startDate) { toon('fout', 'Selecteer een startdatum.'); return; }
+    if (!form.endDate)   { toon('fout', 'Selecteer een einddatum.'); return; }
 
-    showMsg('busy', '<span class="spin"></span>Bezig…');
+    toon('bezig', 'Bezig...');
     document.getElementById('btn').disabled = true;
 
     google.script.run
       .withSuccessHandler(function (r) {
         document.getElementById('btn').disabled = false;
-        showMsg(r.success ? 'ok' : 'err', (r.success ? '✅ ' : '❌ ') + r.message);
+        toon(r.success ? 'ok' : 'fout', (r.success ? '✅ ' : '❌ ') + r.message);
         if (r.success) {
           document.getElementById('badgeNo').value = '';
-          document.getElementById('agency').value  = '';
-          document.getElementById('targetHub').value = '';
+          document.getElementById('doelHub').value = '';
         }
       })
-      .withFailureHandler(function (err) {
+      .withFailureHandler(function (e) {
         document.getElementById('btn').disabled = false;
-        showMsg('err', '❌ Systeemfout: ' + err.message);
+        toon('fout', '❌ ' + e.message);
       })
-      .shareDriver({ badgeNo, agency, targetHubName: targetHub, startDate, endDate });
+      .shareDriver(form);
   }
 
-  function showMsg(type, html) {
-    const el = document.getElementById('msg');
+  function toon(type, tekst) {
+    var el = document.getElementById('msg');
     el.className = type;
-    el.innerHTML = html;
+    el.textContent = tekst;
     el.style.display = 'block';
   }
 </script>
