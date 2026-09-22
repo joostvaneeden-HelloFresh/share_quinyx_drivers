@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <base target="_top">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; font-size: 14px; color: #202124; padding: 24px; }
+    h2 { font-size: 17px; margin-bottom: 18px; }
+    .field { margin-bottom: 14px; }
+    label { display: block; font-size: 12px; font-weight: bold; color: #5f6368; margin-bottom: 5px; text-transform: uppercase; }
+    input, select { width: 100%; padding: 9px 12px; border: 1px solid #dadce0; border-radius: 6px; font-size: 14px; }
+    input:focus, select:focus { border-color: #1a73e8; outline: none; }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    hr { border: none; border-top: 1px solid #e8eaed; margin: 18px 0; }
+    .actions { display: flex; justify-content: flex-end; gap: 10px; }
+    button { padding: 9px 20px; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer; border: none; }
+    .annuleer { background: #fff; border: 1px solid #dadce0; color: #1a73e8; }
+    .deel { background: #1a73e8; color: #fff; }
+    .deel:disabled { opacity: .5; cursor: default; }
+    #msg { margin-top: 14px; padding: 10px 14px; border-radius: 6px; font-size: 13px; display: none; }
+    .ok   { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+    .fout { background: #fce8e6; color: #c5221f; border: 1px solid #f5c6c4; }
+    .bezig{ background: #e8f0fe; color: #1a73e8; border: 1px solid #aecbfa; }
+  </style>
+</head>
+<body>
+
+<h2>🚗 Chauffeur tijdelijk delen</h2>
+
+<div class="field">
+  <label>Personeelsnummer</label>
+  <input type="text" id="badgeNo" placeholder="bijv. YCDIE12345" autocomplete="off">
+</div>
+
+<div class="field">
+  <label>Deel met hub</label>
+  <select id="doelHub">
+    <option value="">— Selecteer hub —</option>
+  </select>
+</div>
+
+<div class="field">
+  <label>Periode</label>
+  <div class="row2">
+    <div>
+      <label style="margin-bottom:3px">Van</label>
+      <input type="date" id="startDate">
+    </div>
+    <div>
+      <label style="margin-bottom:3px">Tot en met</label>
+      <input type="date" id="endDate">
+    </div>
+  </div>
+</div>
+
+<div id="msg"></div>
+
+<hr>
+<div class="actions">
+  <button class="annuleer" onclick="google.script.host.close()">Annuleren</button>
+  <button class="deel" id="btn" onclick="delen()">Deel chauffeur</button>
+</div>
+
+<script>
+  // Datums instellen op vandaag
+  var tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  var morgen = tomorrow.toISOString().split('T')[0];
+  document.getElementById('startDate').value = morgen;
+  document.getElementById('startDate').min   = morgen;
+  document.getElementById('endDate').value   = morgen;
+  document.getElementById('endDate').min     = morgen;
+
+  document.getElementById('startDate').addEventListener('change', function () {
+    var e = document.getElementById('endDate');
+    if (e.value < this.value) e.value = this.value;
+    e.min = this.value;
+  });
+
+  // Laad de doelhubs
+  google.script.run
+    .withSuccessHandler(function (hubs) {
+      var sel = document.getElementById('doelHub');
+      hubs.forEach(function (h) {
+        var o = document.createElement('option');
+        o.value = o.textContent = h;
+        sel.appendChild(o);
+      });
+    })
+    .getDoelHubs();
+
+  function delen() {
+    var form = {
+      badgeNo:   document.getElementById('badgeNo').value.trim(),
+      doelHub:   document.getElementById('doelHub').value,
+      startDate: document.getElementById('startDate').value,
+      endDate:   document.getElementById('endDate').value,
+    };
+
+    if (!form.badgeNo)   { toon('fout', 'Voer een personeelsnummer in.'); return; }
+    if (!form.doelHub)   { toon('fout', 'Selecteer een hub.'); return; }
+    if (!form.startDate) { toon('fout', 'Selecteer een startdatum.'); return; }
+    if (!form.endDate)   { toon('fout', 'Selecteer een einddatum.'); return; }
+
+    toon('bezig', 'Bezig...');
+    document.getElementById('btn').disabled = true;
+
+    google.script.run
+      .withSuccessHandler(function (r) {
+        document.getElementById('btn').disabled = false;
+        toon(r.success ? 'ok' : 'fout', (r.success ? '✅ ' : '❌ ') + r.message);
+        if (r.success) {
+          document.getElementById('badgeNo').value = '';
+          document.getElementById('doelHub').value = '';
+        }
+      })
+      .withFailureHandler(function (e) {
+        document.getElementById('btn').disabled = false;
+        toon('fout', '❌ ' + e.message);
+      })
+      .shareDriver(form);
+  }
+
+  function toon(type, tekst) {
+    var el = document.getElementById('msg');
+    el.className = type;
+    el.textContent = tekst;
+    el.style.display = 'block';
+  }
+</script>
+</body>
+</html>
