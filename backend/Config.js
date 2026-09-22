@@ -6,6 +6,7 @@ const HUBS = {
   Duiven:       { unitExtCode: '50649' },
   Maastricht:   { unitExtCode: '50651' },
   Groningen:    { unitExtCode: '249319' },
+  Ruinerwold:   { unitExtCode: '50648' },
 };
 
 // Interne Quinyx groupIds per uitzendpartij per hub (type=SECTION, uit wsdlGetNeoGroups)
@@ -19,6 +20,7 @@ const SECTION_IDS = {
     Duiven:       206244,
     Maastricht:   206266,
     Groningen:    250804,
+    Ruinerwold:   206306,
   },
   Timing: {
     Diemen:       206238,
@@ -28,6 +30,7 @@ const SECTION_IDS = {
     Duiven:       206246,
     Maastricht:   206267,
     Groningen:    250803,
+    Ruinerwold:   206309,
   },
   TempoTeam: {
     Diemen:       206239,
@@ -37,6 +40,7 @@ const SECTION_IDS = {
     Duiven:       206245,
     Maastricht:   277784,
     Groningen:    null,
+    Ruinerwold:   277639,
   },
   NowJobs: {
     Diemen:       206240,
@@ -46,6 +50,7 @@ const SECTION_IDS = {
     Duiven:       246373,
     Maastricht:   251494,
     Groningen:    250805,
+    Ruinerwold:   206308,
   },
   Subs: {
     Diemen:       206242,
@@ -55,6 +60,7 @@ const SECTION_IDS = {
     Duiven:       214184,
     Maastricht:   246150,
     Groningen:    250808,
+    Ruinerwold:   206307,
   },
   LevelWorks: {
     Diemen:       248890,
@@ -64,6 +70,7 @@ const SECTION_IDS = {
     Duiven:       316541,
     Maastricht:   206269,
     Groningen:    null,
+    Ruinerwold:   268958,
   },
 };
 
@@ -84,6 +91,7 @@ const HUB_PREFIX = {
   Duiven:       'DUI',
   Maastricht:   'MAA',
   Groningen:    'GRO',
+  Ruinerwold:   'RUI',
 };
 
 // Bleiswijk is onlangs samengevoegd met Schiedam — beide prefixen verwijzen naar dezelfde hub
