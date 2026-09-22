@@ -18,6 +18,7 @@ function quinyxShareEmployee(p) {
       <employees xsi:type="SOAP-ENC:Array" SOAP-ENC:arrayType="tns:UpdateEmployee[1]">
         <item xsi:type="tns:UpdateEmployee">
           <badgeNo xsi:type="xsd:string">${x(p.badgeNo)}</badgeNo>
+          <replaceNeoGroup xsi:type="xsd:boolean">false</replaceNeoGroup>
           <groupRoles xsi:type="SOAP-ENC:Array" SOAP-ENC:arrayType="tns:GroupsRoles[1]">
             <item xsi:type="tns:GroupsRoles">
               <extGroupId xsi:type="xsd:string">${x(p.targetSectionCode)}</extGroupId>
