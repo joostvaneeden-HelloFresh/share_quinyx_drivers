@@ -16,12 +16,21 @@ function openShareDialog() {
 
 function promptApiKey() {
   const ui = SpreadsheetApp.getUi();
-  const result = ui.prompt('Quinyx API key', 'Voer de API key in:', ui.ButtonSet.OK_CANCEL);
-  if (result.getSelectedButton() !== ui.Button.OK) return;
-  const key = result.getResponseText().trim();
-  if (!key) { ui.alert('Niets ingevoerd.'); return; }
-  PropertiesService.getScriptProperties().setProperty('QUINYX_API_KEY', key);
-  ui.alert('✅ API key opgeslagen.');
+
+  // Sla een API key op per doelhub
+  const hubs = Object.keys(HUBS);
+  for (const hub of hubs) {
+    const result = ui.prompt(
+      'API key voor ' + hub,
+      'Voer de Quinyx API key in van hub ' + hub + ' (de hub waar naartoe gedeeld wordt):',
+      ui.ButtonSet.OK_CANCEL
+    );
+    if (result.getSelectedButton() !== ui.Button.OK) return;
+    const key = result.getResponseText().trim();
+    if (!key) { ui.alert('Niets ingevoerd voor ' + hub + '.'); return; }
+    PropertiesService.getScriptProperties().setProperty('QUINYX_API_KEY_' + hub, key);
+  }
+  ui.alert('✅ API keys opgeslagen.');
 }
 
 // Aangeroepen vanuit de dialoog
@@ -49,7 +58,7 @@ function shareDriver(form) {
 
     const hub = HUBS[doelHub];
     const result = quinyxMoveEmployee({
-      apiKey:      getApiKey(),
+      apiKey:      getApiKeyVoor(doelHub),
       badgeNo:     badgeNo,
       unitExtCode: hub.unitExtCode,
       sectionCode: sectie.sectionCode,

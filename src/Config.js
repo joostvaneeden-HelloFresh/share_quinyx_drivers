@@ -15,9 +15,10 @@ const SECTIES = {
 
 const API_URL = 'https://api.quinyx.com/FlexForceWebServices.php';
 
-function getApiKey() {
-  const key = PropertiesService.getScriptProperties().getProperty('QUINYX_API_KEY');
-  if (!key) throw new Error('API key niet ingesteld. Ga naar Setup → Stel API key in.');
+// Haal de API key op voor de doelhub (de key van de hub waar naartoe gedeeld wordt)
+function getApiKeyVoor(hubNaam) {
+  const key = PropertiesService.getScriptProperties().getProperty('QUINYX_API_KEY_' + hubNaam);
+  if (!key) throw new Error('API key voor ' + hubNaam + ' niet ingesteld. Ga naar Setup → Stel API key in.');
   return key;
 }
 
