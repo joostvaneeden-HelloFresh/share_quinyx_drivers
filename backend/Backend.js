@@ -15,7 +15,10 @@ function shareDriver(form) {
 
     const sectie = getSectieInfo(badgeNo, doelHub);
     if (!sectie) {
-      return { success: false, message: 'Personeelsnummer ' + badgeNo + ' wordt niet herkend. Begint het met YCDIE of TIDIE?' };
+      return { success: false, message: 'Personeelsnummer ' + badgeNo + ' wordt niet herkend. Controleer het prefix (bijv. YCDUI, TIGRO).' };
+    }
+    if (!sectie.sectionCode) {
+      return { success: false, message: sectie.agency + ' heeft geen sectie in ' + doelHub + '.' };
     }
 
     const result = quinyxShareEmployee({

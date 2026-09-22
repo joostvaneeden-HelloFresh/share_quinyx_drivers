@@ -1,54 +1,111 @@
-// Alle hubs met hun unitExtCode (extGroupId uit Quinyx)
 const HUBS = {
   Diemen:       { unitExtCode: '50644' },
   Nieuwegein:   { unitExtCode: '50646' },
   Schiedam:     { unitExtCode: '50645' },
-  Duiven:       { unitExtCode: '50649' },
+  Bleiswijk:    { unitExtCode: null },   // TODO: unitExtCode nog onbekend
   'Etten-Leur': { unitExtCode: '50650' },
+  Duiven:       { unitExtCode: '50649' },
   Maastricht:   { unitExtCode: '50651' },
-  Reusel:       { unitExtCode: '50652' },
-  Ruinerwold:   { unitExtCode: '50648' },
   Groningen:    { unitExtCode: '249319' },
 };
 
-// Personeelsnummer prefix → uitzendpartij + thuishub + interne Quinyx groupId per doelhub
-// groupIds komen uit wsdlGetNeoGroups (type=SECTION)
-// Voeg hier nieuwe prefixes toe zodra je de prefix van andere hubs weet.
-const SECTIES = {
-  'YCDIE': {
-    agency:  'YoungCapital',
-    homeHub: 'Diemen',
-    secties: {
-      Diemen:       '206236',
-      Nieuwegein:   '206395',
-      Schiedam:     '204960',
-      Duiven:       '206244',
-      'Etten-Leur': '206258',
-      Maastricht:   '206266',
-      Reusel:       '206273',
-      Ruinerwold:   '206306',
-      Groningen:    '250804',
-    },
+// Interne Quinyx groupIds per uitzendpartij per hub (type=SECTION, uit wsdlGetNeoGroups)
+// null = sectie bestaat niet of groupId nog onbekend
+const SECTION_IDS = {
+  YoungCapital: {
+    Diemen:       206236,
+    Nieuwegein:   206395,
+    Schiedam:     204960,
+    Bleiswijk:    null,
+    'Etten-Leur': 206258,
+    Duiven:       206244,
+    Maastricht:   206266,
+    Groningen:    250804,
   },
-  'TIDIE': {
-    agency:  'Timing',
-    homeHub: 'Diemen',
-    secties: {
-      Diemen:       '206238',
-      Nieuwegein:   '206288',
-      Schiedam:     '206251',
-      Duiven:       '206246',
-      'Etten-Leur': '206259',
-      Maastricht:   '206267',
-      Reusel:       '259930',
-      Ruinerwold:   '206309',
-      Groningen:    '250803',
-    },
+  Timing: {
+    Diemen:       206238,
+    Nieuwegein:   206288,
+    Schiedam:     206251,
+    Bleiswijk:    null,
+    'Etten-Leur': 206259,
+    Duiven:       206246,
+    Maastricht:   206267,
+    Groningen:    250803,
   },
-  // Voeg hier prefixes toe voor andere hubs, bijv:
-  // 'YCNIE': { agency: 'YoungCapital', homeHub: 'Nieuwegein', secties: { ... } },
-  // 'TINIE': { agency: 'Timing',       homeHub: 'Nieuwegein', secties: { ... } },
+  TempoTeam: {
+    Diemen:       206239,
+    Nieuwegein:   264509,
+    Schiedam:     206255,
+    Bleiswijk:    null,
+    'Etten-Leur': 206260,
+    Duiven:       206245,
+    Maastricht:   277784,
+    Groningen:    null,
+  },
+  NowJobs: {
+    Diemen:       206240,
+    Nieuwegein:   206290,
+    Schiedam:     206252,
+    Bleiswijk:    null,
+    'Etten-Leur': 252942,
+    Duiven:       246373,
+    Maastricht:   251494,
+    Groningen:    250805,
+  },
+  Subs: {
+    Diemen:       206242,
+    Nieuwegein:   206291,
+    Schiedam:     246148,
+    Bleiswijk:    null,
+    'Etten-Leur': 246149,
+    Duiven:       214184,
+    Maastricht:   246150,
+    Groningen:    250808,
+  },
+  LevelWorks: {
+    Diemen:       248890,
+    Nieuwegein:   206289,
+    Schiedam:     252606,
+    Bleiswijk:    null,
+    'Etten-Leur': 206262,
+    Duiven:       316541,
+    Maastricht:   206269,
+    Groningen:    null,
+  },
 };
+
+// Badge-prefix = agencycode + hubcode
+const AGENCY_PREFIX = {
+  YoungCapital: 'YC',
+  Timing:       'TI',
+  TempoTeam:    'TT',
+  NowJobs:      'NJ',
+  Subs:         'YO',
+  LevelWorks:   'LW',
+};
+const HUB_PREFIX = {
+  Diemen:       'DIE',
+  Nieuwegein:   'NIE',
+  Schiedam:     'SCH',
+  Bleiswijk:    'BLE',
+  'Etten-Leur': 'ETL',
+  Duiven:       'DUI',
+  Maastricht:   'MAA',
+  Groningen:    'GRO',
+};
+
+// Genereer SECTIES automatisch: alle agency+hub combinaties
+const SECTIES = {};
+Object.keys(AGENCY_PREFIX).forEach(function(agency) {
+  Object.keys(HUB_PREFIX).forEach(function(homeHub) {
+    const prefix = AGENCY_PREFIX[agency] + HUB_PREFIX[homeHub];
+    SECTIES[prefix] = {
+      agency:  agency,
+      homeHub: homeHub,
+      secties: SECTION_IDS[agency],
+    };
+  });
+});
 
 const API_URL = 'https://api.quinyx.com/FlexForceWebServices.php';
 
@@ -65,6 +122,6 @@ function getSectieInfo(badgeNo, doelHub) {
   return {
     agency:      info.agency,
     homeHub:     info.homeHub,
-    sectionCode: info.secties[doelHub],
+    sectionCode: info.secties[doelHub] || null,
   };
 }
