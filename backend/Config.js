@@ -12,6 +12,16 @@ const HUBS = {
 // Interne Quinyx groupIds per uitzendpartij per hub (type=SECTION, uit wsdlGetNeoGroups)
 // null = sectie bestaat niet of groupId nog onbekend
 const SECTION_IDS = {
+  HelloFresh: {
+    Diemen:       206243,
+    Nieuwegein:   206295,
+    Schiedam:     206256,
+    'Etten-Leur': 206263,
+    Duiven:       206249,
+    Maastricht:   206270,
+    Groningen:    250806,
+    Ruinerwold:   206310,
+  },
   YoungCapital: {
     Diemen:       206236,
     Nieuwegein:   206395,
@@ -125,7 +135,15 @@ function getApiKeyVoor(hubNaam) {
   return key;
 }
 
-function getSectieInfo(badgeNo, doelHub) {
+function getSectieInfo(badgeNo, doelHub, bronHub) {
+  // Numeriek badgenummer = HelloFresh eigen medewerker
+  if (/^\d+$/.test(badgeNo)) {
+    return {
+      agency:      'HelloFresh',
+      homeHub:     bronHub,
+      sectionCode: (SECTION_IDS['HelloFresh'][doelHub] || null),
+    };
+  }
   const prefix = Object.keys(SECTIES).find(p => badgeNo.toUpperCase().startsWith(p));
   if (!prefix) return null;
   const info = SECTIES[prefix];

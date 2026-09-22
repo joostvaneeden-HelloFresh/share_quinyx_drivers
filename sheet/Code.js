@@ -1,3 +1,6 @@
+// Pas dit aan per hub-sheet
+const DEZE_HUB = 'Diemen';
+
 function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu('🚗 Chauffeur Delen')
@@ -14,6 +17,7 @@ function openShareDialog() {
 
 function shareDriver(form) {
   form.sheetId = SpreadsheetApp.getActiveSpreadsheet().getId();
+  form.bronHub = DEZE_HUB;
   return QuinyxBackend.shareDriver(form);
 }
 

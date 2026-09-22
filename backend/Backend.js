@@ -13,7 +13,7 @@ function shareDriver(form) {
     if (!endDate)   return { success: false, message: 'Selecteer een einddatum.' };
     if (endDate < startDate) return { success: false, message: 'Einddatum moet na startdatum liggen.' };
 
-    const sectie = getSectieInfo(badgeNo, doelHub);
+    const sectie = getSectieInfo(badgeNo, doelHub, form.bronHub || '');
     if (!sectie) {
       return { success: false, message: 'Personeelsnummer ' + badgeNo + ' wordt niet herkend. Controleer het prefix (bijv. YCDUI, TIGRO).' };
     }
