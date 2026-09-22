@@ -8,9 +8,10 @@ const HUBS = {
 };
 
 // Personeelsnummer prefix → sectie code per hub
+// Waarden zijn interne Quinyx groupIds (te vinden in de URL van het groep-dialoog in Quinyx admin)
 const SECTIES = {
-  'YCDIE': { agency: 'YoungCapital', secties: { Diemen: '81055', Nieuwegein: '81124' } },
-  'TIDIE': { agency: 'Timing',       secties: { Diemen: '81971', Nieuwegein: '82021' } },
+  'YCDIE': { agency: 'YoungCapital', secties: { Diemen: '???', Nieuwegein: '???' } },
+  'TIDIE': { agency: 'Timing',       secties: { Diemen: '???', Nieuwegein: '206288' } },
 };
 
 const API_URL = 'https://api.quinyx.com/FlexForceWebServices.php';
