@@ -45,6 +45,20 @@ function quinyxMoveEmployee(p) {
   const fault = body.match(/<faultstring[^>]*>([^<]+)<\/faultstring>/i);
   if (fault) return { success: false, message: 'Quinyx: ' + fault[1].trim() };
 
+  // Lees validatiefouten uit de response
+  const errors = [];
+  const regex = /<validationErrors[^>]*>(.+?)<\/validationErrors>/is;
+  const block = body.match(regex);
+  if (block) {
+    const items = block[1].matchAll(/<item[^>]*>([^<]+)<\/item>/gi);
+    for (const m of items) {
+      if (m[1].trim()) errors.push(m[1].trim());
+    }
+  }
+  if (errors.length > 0) {
+    return { success: false, message: 'Quinyx: ' + errors.join(' | ') };
+  }
+
   return { success: true, message: 'Chauffeur succesvol gedeeld.' };
 }
 
