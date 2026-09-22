@@ -2,7 +2,6 @@ const HUBS = {
   Diemen:       { unitExtCode: '50644' },
   Nieuwegein:   { unitExtCode: '50646' },
   Schiedam:     { unitExtCode: '50645' },
-  Bleiswijk:    { unitExtCode: null },   // TODO: unitExtCode nog onbekend
   'Etten-Leur': { unitExtCode: '50650' },
   Duiven:       { unitExtCode: '50649' },
   Maastricht:   { unitExtCode: '50651' },
@@ -16,7 +15,6 @@ const SECTION_IDS = {
     Diemen:       206236,
     Nieuwegein:   206395,
     Schiedam:     204960,
-    Bleiswijk:    null,
     'Etten-Leur': 206258,
     Duiven:       206244,
     Maastricht:   206266,
@@ -26,7 +24,6 @@ const SECTION_IDS = {
     Diemen:       206238,
     Nieuwegein:   206288,
     Schiedam:     206251,
-    Bleiswijk:    null,
     'Etten-Leur': 206259,
     Duiven:       206246,
     Maastricht:   206267,
@@ -36,7 +33,6 @@ const SECTION_IDS = {
     Diemen:       206239,
     Nieuwegein:   264509,
     Schiedam:     206255,
-    Bleiswijk:    null,
     'Etten-Leur': 206260,
     Duiven:       206245,
     Maastricht:   277784,
@@ -46,7 +42,6 @@ const SECTION_IDS = {
     Diemen:       206240,
     Nieuwegein:   206290,
     Schiedam:     206252,
-    Bleiswijk:    null,
     'Etten-Leur': 252942,
     Duiven:       246373,
     Maastricht:   251494,
@@ -56,7 +51,6 @@ const SECTION_IDS = {
     Diemen:       206242,
     Nieuwegein:   206291,
     Schiedam:     246148,
-    Bleiswijk:    null,
     'Etten-Leur': 246149,
     Duiven:       214184,
     Maastricht:   246150,
@@ -66,7 +60,6 @@ const SECTION_IDS = {
     Diemen:       248890,
     Nieuwegein:   206289,
     Schiedam:     252606,
-    Bleiswijk:    null,
     'Etten-Leur': 206262,
     Duiven:       316541,
     Maastricht:   206269,
@@ -87,12 +80,14 @@ const HUB_PREFIX = {
   Diemen:       'DIE',
   Nieuwegein:   'NIE',
   Schiedam:     'SCH',
-  Bleiswijk:    'BLE',
   'Etten-Leur': 'ETL',
   Duiven:       'DUI',
   Maastricht:   'MAA',
   Groningen:    'GRO',
 };
+
+// Bleiswijk is onlangs samengevoegd met Schiedam — beide prefixen verwijzen naar dezelfde hub
+const BLEISWIJK_ALIAS = 'Schiedam';
 
 // Genereer SECTIES automatisch: alle agency+hub combinaties
 const SECTIES = {};
@@ -105,6 +100,13 @@ Object.keys(AGENCY_PREFIX).forEach(function(agency) {
       secties: SECTION_IDS[agency],
     };
   });
+  // Bleiswijk-prefixen: zelfde groupIds als Schiedam, API key van Schiedam
+  const blePrefix = AGENCY_PREFIX[agency] + 'BLE';
+  SECTIES[blePrefix] = {
+    agency:  agency,
+    homeHub: BLEISWIJK_ALIAS,
+    secties: SECTION_IDS[agency],
+  };
 });
 
 const API_URL = 'https://api.quinyx.com/FlexForceWebServices.php';
