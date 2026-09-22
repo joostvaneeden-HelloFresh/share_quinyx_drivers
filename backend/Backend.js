@@ -19,7 +19,7 @@ function shareDriver(form) {
     }
 
     const result = quinyxShareEmployee({
-      apiKey:            getApiKeyVoor(DEZE_HUB.naam),
+      apiKey:            getApiKeyVoor(sectie.homeHub),
       badgeNo:           badgeNo,
       targetSectionCode: sectie.sectionCode,
       startDate:         startDate,
@@ -37,7 +37,7 @@ function shareDriver(form) {
 }
 
 function getDoelHubs() {
-  return Object.keys(HUBS);
+  return Object.keys(HUBS).sort();
 }
 
 function logActie(sheetId, badgeNo, agency, doelHub, startDate, endDate, success, message) {
