@@ -21,7 +21,7 @@ function quinyxShareEmployee(p) {
           <replaceNeoGroup xsi:type="xsd:boolean">false</replaceNeoGroup>
           <groupRoles xsi:type="SOAP-ENC:Array" SOAP-ENC:arrayType="tns:GroupsRoles[1]">
             <item xsi:type="tns:GroupsRoles">
-              <extGroupId xsi:type="xsd:string">${x(p.targetSectionCode)}</extGroupId>
+              <groupId xsi:type="xsd:int">${x(p.targetSectionCode)}</groupId>
               <roleId xsi:type="xsd:string">18938</roleId>
               <startDate xsi:type="xsd:string">${x(p.startDate)}</startDate>
               <endDate xsi:type="xsd:string">${x(p.endDate)}</endDate>
