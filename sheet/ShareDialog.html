@@ -64,11 +64,12 @@
 
 <script>
   // Datums instellen op vandaag
-  var tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  var morgen = tomorrow.toISOString().split('T')[0];
-  document.getElementById('startDate').value = morgen;
-  document.getElementById('endDate').value   = morgen;
+  var nu = new Date();
+  var vandaag = nu.getFullYear() + '-' +
+    String(nu.getMonth() + 1).padStart(2, '0') + '-' +
+    String(nu.getDate()).padStart(2, '0');
+  document.getElementById('startDate').value = vandaag;
+  document.getElementById('endDate').value   = vandaag;
 
   document.getElementById('startDate').addEventListener('change', function () {
     var e = document.getElementById('endDate');
