@@ -131,10 +131,6 @@ Object.keys(AGENCY_PREFIX).forEach(function(agency) {
   });
 });
 
-// Uit totdat de thuishub van een numeriek badgenummer in Quinyx geverifieerd wordt.
-// Zonder verificatie kan de API key van de verkeerde hub een medewerker naar die hub verplaatsen.
-const HELLOFRESH_SHARING_ENABLED = false;
-
 const API_URL ='https://api.quinyx.com/FlexForceWebServices.php';
 
 function getApiKeyVoor(hubNaam) {
