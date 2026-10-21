@@ -17,19 +17,26 @@ function shareDriver(form) {
       return { success: false, message: 'Delen van HelloFresh-medewerkers (numerieke badgenummers) is tijdelijk uitgeschakeld.' };
     }
 
-    const sectie = getSectieInfo(badgeNo, doelHub, form.bronHub || '');
+    const sectie = getSectieInfo(badgeNo, doelHub);
     if (!sectie) {
       return { success: false, message: 'Personeelsnummer ' + badgeNo + ' wordt niet herkend. Controleer het prefix (bijv. YCDUI, TIGRO).' };
-    }
-    if (sectie.homeHub === doelHub) {
-      return { success: false, message: 'Je kunt een chauffeur niet delen met de eigen thuishub (' + doelHub + ').' };
     }
     if (!sectie.sectionCode) {
       return { success: false, message: sectie.agency + ' heeft geen sectie in ' + doelHub + '.' };
     }
 
+    // De API key bepaalt de thuisunit in Quinyx: een key van een andere unit verplaatst de medewerker.
+    // Daarom eerst de echte thuishub opzoeken en alleen met de key van die hub delen.
+    const thuis = quinyxFindHomeHub(badgeNo, sectie.homeHub);
+    if (thuis.error) {
+      return { success: false, message: thuis.error };
+    }
+    if (thuis.hub === doelHub) {
+      return { success: false, message: 'Je kunt een chauffeur niet delen met de eigen thuishub (' + doelHub + ').' };
+    }
+
     const result = quinyxShareEmployee({
-      apiKey:            getApiKeyVoor(sectie.homeHub),
+      apiKey:            getApiKeyVoor(thuis.hub),
       badgeNo:           badgeNo,
       targetSectionCode: sectie.sectionCode,
       startDate:         startDate,

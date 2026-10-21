@@ -143,12 +143,13 @@ function getApiKeyVoor(hubNaam) {
   return key;
 }
 
-function getSectieInfo(badgeNo, doelHub, bronHub) {
-  // Numeriek badgenummer = HelloFresh eigen medewerker
+// homeHub is alleen een hint (uit het prefix); de echte thuishub komt uit quinyxFindHomeHub.
+function getSectieInfo(badgeNo, doelHub) {
+  // Numeriek badgenummer = HelloFresh eigen medewerker, thuishub onbekend tot de opzoeking
   if (/^\d+$/.test(badgeNo)) {
     return {
       agency:      'HelloFresh',
-      homeHub:     bronHub,
+      homeHub:     null,
       sectionCode: (SECTION_IDS['HelloFresh'][doelHub] || null),
     };
   }
