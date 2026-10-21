@@ -13,9 +13,16 @@ function shareDriver(form) {
     if (!endDate)   return { success: false, message: 'Selecteer een einddatum.' };
     if (endDate < startDate) return { success: false, message: 'Einddatum moet na startdatum liggen.' };
 
+    if (/^\d+$/.test(badgeNo) && !HELLOFRESH_SHARING_ENABLED) {
+      return { success: false, message: 'Delen van HelloFresh-medewerkers (numerieke badgenummers) is tijdelijk uitgeschakeld.' };
+    }
+
     const sectie = getSectieInfo(badgeNo, doelHub, form.bronHub || '');
     if (!sectie) {
       return { success: false, message: 'Personeelsnummer ' + badgeNo + ' wordt niet herkend. Controleer het prefix (bijv. YCDUI, TIGRO).' };
+    }
+    if (sectie.homeHub === doelHub) {
+      return { success: false, message: 'Je kunt een chauffeur niet delen met de eigen thuishub (' + doelHub + ').' };
     }
     if (!sectie.sectionCode) {
       return { success: false, message: sectie.agency + ' heeft geen sectie in ' + doelHub + '.' };
