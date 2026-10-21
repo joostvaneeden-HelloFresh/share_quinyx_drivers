@@ -97,15 +97,19 @@ const HUB_PREFIX = {
   Diemen:       'DIE',
   Nieuwegein:   'NIE',
   Schiedam:     'SCH',
-  'Etten-Leur': 'ETL',
+  'Etten-Leur': 'ETT',
   Duiven:       'DUI',
   Maastricht:   'MAA',
   Groningen:    'GRO',
   Ruinerwold:   'RUI',
 };
 
-// Bleiswijk is onlangs samengevoegd met Schiedam — beide prefixen verwijzen naar dezelfde hub
-const BLEISWIJK_ALIAS = 'Schiedam';
+// Extra hubcodes die naar een bestaande hub verwijzen
+// BLE: Bleiswijk is samengevoegd met Schiedam. ETL: oude schrijfwijze van Etten-Leur (ETT).
+const HUB_ALIASES = {
+  BLE: 'Schiedam',
+  ETL: 'Etten-Leur',
+};
 
 // Genereer SECTIES automatisch: alle agency+hub combinaties
 const SECTIES = {};
@@ -118,13 +122,13 @@ Object.keys(AGENCY_PREFIX).forEach(function(agency) {
       secties: SECTION_IDS[agency],
     };
   });
-  // Bleiswijk-prefixen: zelfde groupIds als Schiedam, API key van Schiedam
-  const blePrefix = AGENCY_PREFIX[agency] + 'BLE';
-  SECTIES[blePrefix] = {
-    agency:  agency,
-    homeHub: BLEISWIJK_ALIAS,
-    secties: SECTION_IDS[agency],
-  };
+  Object.keys(HUB_ALIASES).forEach(function(code) {
+    SECTIES[AGENCY_PREFIX[agency] + code] = {
+      agency:  agency,
+      homeHub: HUB_ALIASES[code],
+      secties: SECTION_IDS[agency],
+    };
+  });
 });
 
 const API_URL = 'https://api.quinyx.com/FlexForceWebServices.php';
