@@ -129,15 +129,16 @@ function zoekThuishub_(badgeNo, hubs) {
   try {
     responses = UrlFetchApp.fetchAll(requests);
   } catch (e) {
-    resultaat.fouten = gebruikt.slice();
+    resultaat.fouten = gebruikt.map(function (hub) { return hub + ' (verbindingsfout: ' + e.message + ')'; });
     return resultaat;
   }
 
   responses.forEach(function (res, i) {
     const hub = gebruikt[i];
-    if (res.getResponseCode() !== 200) { resultaat.fouten.push(hub); return; }
+    if (res.getResponseCode() !== 200) { resultaat.fouten.push(hub + ' (HTTP ' + res.getResponseCode() + ')'); return; }
     const body = res.getContentText('UTF-8');
-    if (/<faultstring/i.test(body)) { resultaat.fouten.push(hub); return; }
+    const fault = body.match(/<faultstring[^>]*>([^<]*)<\/faultstring>/i);
+    if (fault) { resultaat.fouten.push(hub + ' (Quinyx: ' + fault[1].trim().slice(0, 120) + ')'); return; }
 
     const restId = zoekRestId_(body, badgeNo);
     if (restId === null) return;
