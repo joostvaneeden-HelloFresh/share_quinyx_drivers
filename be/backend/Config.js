@@ -88,7 +88,7 @@ const API_URL = 'https://api.quinyx.com/FlexForceWebServices.php';
 
 function getApiKeyVoor(hubNaam) {
   const key = PropertiesService.getScriptProperties().getProperty('QUINYX_API_KEY_' + hubNaam);
-  if (!key) throw new Error('API key voor ' + hubNaam + ' niet ingesteld.');
+  if (!key) throw new Error('API key for ' + hubNaam + ' is not set.');
   return key;
 }
 

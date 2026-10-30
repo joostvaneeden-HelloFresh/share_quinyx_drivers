@@ -7,18 +7,18 @@ function shareDriver(form) {
     const startDate = form.startDate;
     const endDate   = form.endDate;
 
-    if (!badgeNo)   return { success: false, message: 'Voer een personeelsnummer in.' };
-    if (!doelHub)   return { success: false, message: 'Selecteer een doelhub.' };
-    if (!startDate) return { success: false, message: 'Selecteer een startdatum.' };
-    if (!endDate)   return { success: false, message: 'Selecteer een einddatum.' };
-    if (endDate < startDate) return { success: false, message: 'Einddatum moet na startdatum liggen.' };
+    if (!badgeNo)   return { success: false, message: 'Enter a badge number.' };
+    if (!doelHub)   return { success: false, message: 'Select a target hub.' };
+    if (!startDate) return { success: false, message: 'Select a start date.' };
+    if (!endDate)   return { success: false, message: 'Select an end date.' };
+    if (endDate < startDate) return { success: false, message: 'The end date must not be before the start date.' };
 
     const sectie = getSectieInfo(badgeNo, doelHub);
     if (!sectie) {
-      return { success: false, message: 'Personeelsnummer ' + badgeNo + ' wordt niet herkend. Controleer het prefix (bijv. TTGEN, ADANT).' };
+      return { success: false, message: 'Badge number ' + badgeNo + ' is not recognised. Check the prefix (e.g. TTGEN, ADANT).' };
     }
     if (!sectie.sectionCode) {
-      return { success: false, message: sectie.agency + ' heeft geen sectie in ' + doelHub + '.' };
+      return { success: false, message: sectie.agency + ' has no section in ' + doelHub + '.' };
     }
 
     // De API key bepaalt de thuisunit in Quinyx: een key van een andere unit verplaatst de medewerker.
@@ -28,7 +28,7 @@ function shareDriver(form) {
       return { success: false, message: thuis.error };
     }
     if (thuis.hub === doelHub) {
-      return { success: false, message: 'Je kunt een chauffeur niet delen met de eigen thuishub (' + doelHub + ').' };
+      return { success: false, message: 'You cannot share a driver with their own home hub (' + doelHub + ').' };
     }
 
     const result = quinyxShareEmployee({
@@ -41,7 +41,7 @@ function shareDriver(form) {
     });
 
     const logFout = logActie(form.sheetId, badgeNo, sectie.agency, doelHub, startDate, endDate, result.success, result.message);
-    if (logFout) result.message += ' (Let op: loggen in de sheet mislukt: ' + logFout + ')';
+    if (logFout) result.message += ' (Note: writing to the log failed: ' + logFout + ')';
 
     return result;
 
@@ -61,11 +61,11 @@ function logActie(sheetId, badgeNo, agency, doelHub, startDate, endDate, success
     let   log = ss.getSheetByName('Log');
     if (!log) {
       log = ss.insertSheet('Log');
-      log.appendRow(['Tijdstip', 'Personeelsnummer', 'Uitzendpartij', 'Naar hub', 'Van', 'Tot', 'Status', 'Melding']);
+      log.appendRow(['Time', 'Badge number', 'Agency', 'To hub', 'From', 'Until', 'Status', 'Message']);
       log.getRange(1, 1, 1, 8).setFontWeight('bold').setBackground('#c9303a').setFontColor('#fff');
       log.setFrozenRows(1);
     }
-    log.appendRow([new Date(), badgeNo, agency, doelHub, startDate, endDate, success ? 'OK' : 'FOUT', message]);
+    log.appendRow([new Date(), badgeNo, agency, doelHub, startDate, endDate, success ? 'OK' : 'ERROR', message]);
     return null;
   } catch (e) {
     Logger.log('[log] ' + e.toString());

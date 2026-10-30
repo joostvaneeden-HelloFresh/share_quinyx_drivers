@@ -44,14 +44,14 @@ function quinyxShareEmployee(p) {
       muteHttpExceptions: true,
     });
   } catch (e) {
-    return { success: false, message: 'Verbindingsfout: ' + e.message };
+    return { success: false, message: 'Connection error: ' + e.message };
   }
 
   const code = response.getResponseCode();
   const body = response.getContentText('UTF-8');
   Logger.log('[Quinyx] HTTP ' + code + '\n' + body);
 
-  if (code !== 200) return { success: false, message: 'Quinyx fout (HTTP ' + code + ').' };
+  if (code !== 200) return { success: false, message: 'Quinyx error (HTTP ' + code + ').' };
 
   // SOAP fault
   const fault = body.match(/<faultstring[^>]*>([^<]+)<\/faultstring>/i);
@@ -67,7 +67,7 @@ function quinyxShareEmployee(p) {
   }
   if (errors.length > 0) return { success: false, message: 'Quinyx: ' + errors.join(' | ') };
 
-  return { success: true, message: 'Chauffeur succesvol gedeeld.' };
+  return { success: true, message: 'Driver shared successfully.' };
 }
 
 function x(v) {
@@ -93,9 +93,9 @@ function quinyxFindHomeHub(badgeNo, hintHub) {
 
   const details = eerste.afwijkingen.concat(tweede.afwijkingen);
   const fouten  = eerste.fouten.concat(tweede.fouten);
-  let message = 'Personeelsnummer ' + badgeNo + ' is niet gevonden als medewerker van een hub in Quinyx. Controleer het nummer.';
+  let message = 'Badge number ' + badgeNo + ' was not found as an employee of a hub in Quinyx. Check the number.';
   if (details.length) message += ' ' + details.join(' ');
-  if (fouten.length)  message += ' Opvragen mislukt voor: ' + fouten.join(', ') + '.';
+  if (fouten.length)  message += ' Lookup failed for: ' + fouten.join(', ') + '.';
   return { error: message };
 }
 
@@ -129,7 +129,7 @@ function zoekThuishub_(badgeNo, hubs) {
   try {
     responses = UrlFetchApp.fetchAll(requests);
   } catch (e) {
-    resultaat.fouten = gebruikt.map(function (hub) { return hub + ' (verbindingsfout: ' + e.message + ')'; });
+    resultaat.fouten = gebruikt.map(function (hub) { return hub + ' (connection error: ' + e.message + ')'; });
     return resultaat;
   }
 
@@ -145,7 +145,7 @@ function zoekThuishub_(badgeNo, hubs) {
     if (restId === String(HUBS[hub].unitExtCode)) {
       if (!resultaat.hub) resultaat.hub = hub;
     } else {
-      resultaat.afwijkingen.push('Gevonden bij ' + hub + ', maar met unit-code ' + restId + ' (verwacht ' + HUBS[hub].unitExtCode + ').');
+      resultaat.afwijkingen.push('Found at ' + hub + ', but with unit code ' + restId + ' (expected ' + HUBS[hub].unitExtCode + ').');
     }
   });
   return resultaat;
