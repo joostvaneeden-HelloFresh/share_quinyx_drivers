@@ -1,7 +1,8 @@
 /**
- * Quinyx SOAP API — wsdlUpdateEmployees
- * Voegt een tijdelijke groepsrol toe aan een medewerker (tijdelijk delen).
- * De API key is van de BRONHUB (Diemen) zodat de medewerker daar thuis blijft.
+ * Quinyx SOAP API.
+ * quinyxShareEmployee: wsdlUpdateEmployees, voegt een tijdelijke groepsrol toe (delen).
+ *   De API key moet van de echte thuishub zijn, anders verplaatst Quinyx de medewerker.
+ * quinyxFindHomeHub: wsdlGetEmployeesV2, zoekt die thuishub vooraf op.
  */
 
 function quinyxShareEmployee(p) {
