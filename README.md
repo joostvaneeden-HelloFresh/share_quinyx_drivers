@@ -9,7 +9,7 @@ nl/
 ├── backend/   Apps Script project, alleen voor beheerders. Wordt als Library gepubliceerd.
 │              Bevat de logica en de API keys (Script Properties).
 └── sheet/     Wat de hubmanagers zien: menu, dialoog en een dunne wrapper rond de library.
-be/            Belgische variant (nog leeg).
+be/            Belgische variant, zelfde opzet (backend/ en sheet/), eigen Quinyx-omgeving "Hellofresh BE".
 ```
 
 De API keys staan alleen in de Script Properties van het backend-project (`QUINYX_API_KEY_<hub>`). Managers hebben geen toegang tot dat project, alleen de sheet roept de library aan.
