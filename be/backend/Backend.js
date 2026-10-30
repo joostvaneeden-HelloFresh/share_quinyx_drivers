@@ -40,7 +40,8 @@ function shareDriver(form) {
       endDate:           endDate,
     });
 
-    logActie(form.sheetId, badgeNo, sectie.agency, doelHub, startDate, endDate, result.success, result.message);
+    const logFout = logActie(form.sheetId, badgeNo, sectie.agency, doelHub, startDate, endDate, result.success, result.message);
+    if (logFout) result.message += ' (Let op: loggen in de sheet mislukt: ' + logFout + ')';
 
     return result;
 
@@ -65,7 +66,9 @@ function logActie(sheetId, badgeNo, agency, doelHub, startDate, endDate, success
       log.setFrozenRows(1);
     }
     log.appendRow([new Date(), badgeNo, agency, doelHub, startDate, endDate, success ? 'OK' : 'FOUT', message]);
+    return null;
   } catch (e) {
     Logger.log('[log] ' + e.toString());
+    return e.message;
   }
 }
