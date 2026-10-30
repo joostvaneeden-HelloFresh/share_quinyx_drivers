@@ -1,3 +1,6 @@
+// Quinyx rol-ID van "role.employee" in deze omgeving (verschilt per Quinyx-omgeving)
+const ROLE_ID_EMPLOYEE = 19015;
+
 // Unit-code = extGroupId (integratiesleutel) van de unit in Quinyx; komt overeen met restId van de medewerkers
 const HUBS = {
   Namur:       { unitExtCode: '52033' },

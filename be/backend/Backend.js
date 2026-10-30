@@ -35,6 +35,7 @@ function shareDriver(form) {
       apiKey:            getApiKeyVoor(thuis.hub),
       badgeNo:           badgeNo,
       targetSectionCode: sectie.sectionCode,
+      roleId:            ROLE_ID_EMPLOYEE,
       startDate:         startDate,
       endDate:           endDate,
     });

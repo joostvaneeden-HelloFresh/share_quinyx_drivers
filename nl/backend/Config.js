@@ -1,3 +1,6 @@
+// Quinyx rol-ID van "role.employee" in deze omgeving (verschilt per Quinyx-omgeving)
+const ROLE_ID_EMPLOYEE = 18938;
+
 const HUBS = {
   Diemen:       { unitExtCode: '50644' },
   Nieuwegein:   { unitExtCode: '50646' },
